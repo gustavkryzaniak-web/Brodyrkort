@@ -5,6 +5,13 @@ Den växer när vi lär oss av provbroderingar. Ändra en regel här först, sed
 
 Kolumnen "Provbroderat" fylls i efter varje provsömnad (datum, maskin, material, resultat).
 
+## Maskin
+
+- **Tajima, 6 huvuden.** Läser DST direkt. Samma mönster sys på alla huvuden, så loggan måste få plats i ramen på varje huvud.
+- Modell, ramstorlekar, maximal sömnadshastighet och om man broderar plagg eller kepsar är inte kända ännu. Fyll i här efter första provbroderingen.
+- Trådklipp skrivs som tre små hopp i DST (`trim_at=3`). Det är så Tajima-maskiner normalt tolkar ett klipp, men det ska bekräftas i provbroderingen.
+- Hastighet: sytiden i sammanfattningen räknas med 800 stygn/min. Justera när vi vet vad maskinen går i verkligheten.
+
 ## Enheter och format
 
 | Regel | Värde | Motivering | Provbroderat |
