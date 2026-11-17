@@ -38,7 +38,7 @@ Brodera en logga:
 . .venv/bin/activate
 python -m brodyr.cli testlogos/gotland_gokart.svg --bredd-mm 80
 ```
-Flaggor: `--bredd-mm`, `--stygnlangd-mm`, `--ram-mm`, `--original-storlek`, `--ut`.
+Flaggor: `--bredd-mm`, `--stygnlangd-mm`, `--ram-mm`, `--original-storlek`, `--las` (lite/normal/inget), `--ut`.
 Resultatet hamnar i `output/<namn>.dst` och `output/<namn>.png`.
 
 ## Testa

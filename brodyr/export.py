@@ -84,22 +84,50 @@ def _enhet(a, b):
     return ((b[0] - a[0]) / d, (b[1] - a[1]) / d)
 
 
-def _startlas(b, p0, p1):
-    """Låsstygn i början: fram och tillbaka längs sömmen (3 stygn)."""
-    ux, uy = _enhet(p0, p1)
-    l = min(LASSTYGN_MM, 0.8 * math.dist(p0, p1)) if math.dist(p0, p1) > 0 else LASSTYGN_MM
-    l = max(l, 0.3)
-    q = (p0[0] + ux * l, p0[1] + uy * l)
+def _lasriktning(p, andra, langd):
+    """Punkt `langd` mm från p längs linjen mot `andra` (kortare om sömmen är kort)."""
+    d = math.dist(p, andra)
+    ux, uy = _enhet(p, andra)
+    l = max(0.3, min(langd, 0.8 * d)) if d > 0 else langd
+    return (p[0] + ux * l, p[1] + uy * l)
+
+
+def _startlas_normal(b, p0, p1):
+    """Gamla låset: 3 stygn om 0,5 mm fram och tillbaka (4 trådlager)."""
+    q = _lasriktning(p0, p1, 0.5)
     b.stygn(q); b.stygn(p0); b.stygn(q)
 
 
-def _slutlas(b, pn, pforegaende):
-    """Låsstygn i slutet: fram och tillbaka längs sömmen bakåt (3 stygn)."""
-    ux, uy = _enhet(pn, pforegaende)
-    d = math.dist(pn, pforegaende)
-    l = max(0.3, min(LASSTYGN_MM, 0.8 * d)) if d > 0 else LASSTYGN_MM
-    q = (pn[0] + ux * l, pn[1] + uy * l)
+def _slutlas_normal(b, pn, pforegaende):
+    q = _lasriktning(pn, pforegaende, 0.5)
     b.stygn(q); b.stygn(pn); b.stygn(q)
+
+
+def _startlas_lite(b, p0, p1):
+    """Litet lås: 2 stygn längs sömmen, 0,8 mm. Tråden startar 0,8 mm in på sömmen
+    och sys fast när huvudsömmen passerar över."""
+    q = _lasriktning(p0, p1, 0.8)
+    b.stygn(q); b.stygn(p0)
+
+
+def _slutlas_lite(b, pn, pforegaende):
+    """Litet lås: ett enda stygn 0,8 mm bakåt längs sömmen. Ändan hamnar under tråden."""
+    b.stygn(_lasriktning(pn, pforegaende, 0.8))
+
+
+def _inget_start(b, p0, p1):
+    pass
+
+
+def _inget_slut(b, pn, pforegaende):
+    pass
+
+
+LAS = {
+    "normal": (_startlas_normal, _slutlas_normal),
+    "lite": (_startlas_lite, _slutlas_lite),
+    "inget": (_inget_start, _inget_slut),
+}
 
 
 def _orientera(korning, pos):
@@ -136,7 +164,7 @@ def _ordna_farg(objekt_korningar, pos):
     return ut
 
 
-def bygg_monster(logga: Logga, stygnlangd_mm: float = 2.5, namn: str = "logga"):
+def bygg_monster(logga: Logga, stygnlangd_mm: float = 2.5, namn: str = "logga", las: str = "lite"):
     """Returnerar (EmbPattern, Statistik)."""
     stat = Statistik(varningar=list(logga.varningar))
     if stygnlangd_mm > 11.0:
@@ -145,6 +173,9 @@ def bygg_monster(logga: Logga, stygnlangd_mm: float = 2.5, namn: str = "logga"):
     if stygnlangd_mm < 0.5:
         stat.varningar.append(f"Stygnlängden {stygnlangd_mm} mm är mycket kort och ger onödigt många stygn.")
 
+    if las not in LAS:
+        raise ValueError(f"Okänt lås: {las}. Välj {', '.join(LAS)}.")
+    startlas, slutlas = LAS[las]
     farger = logga.farger()
     b = _Byggare()
     for fi, farg in enumerate(farger):
@@ -162,13 +193,13 @@ def bygg_monster(logga: Logga, stygnlangd_mm: float = 2.5, namn: str = "logga"):
                     b.stygn(pts[0])         # nära: sy direkt, inga lås
             else:
                 b.hopp(pts[0])              # hopp (föregående körning har redan fått slutlås och klipp)
-                _startlas(b, pts[0], pts[1])
+                startlas(b, pts[0], pts[1])
             for p in pts[1:]:
                 b.stygn(p)
             # Behöver körningen slutlås + klipp? Ja om nästa körning ligger långt bort eller är sist.
             nasta_nara = i + 1 < len(ordning) and math.dist(b.pos_mm, ordning[i + 1][0]) <= HOPPGRANS_MM
             if not nasta_nara:
-                _slutlas(b, pts[-1], pts[-2])
+                slutlas(b, pts[-1], pts[-2])
                 if i + 1 < len(ordning):
                     b.klipp()
     # Som i referensfilen: klipp, hoppa tillbaka till origo (ramens mitt) och avsluta.

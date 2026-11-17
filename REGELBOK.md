@@ -22,7 +22,7 @@ Kolumnen "Provbroderat" fylls i efter varje provsömnad (datum, maskin, material
 | Antal stygn | 8 775 (en färg, inga färgbyten) |
 | Trådklipp / hopp | 11 klipp, 35 hopp, 9 sömnadssekvenser |
 | Stygnlängd | median 1,3 mm, medel 1,4 mm, längsta 9,6 mm. 79 % ligger mellan 1,0 och 2,5 mm. 0,6 % är kortare än 0,3 mm (kortast 0,2 mm) |
-| Låsstygn | Fram/tillbaka-stygn (cirka 0,6–0,9 mm), 3 stygn i början och slutet av sekvenser. Samma idé som vår regel. |
+| Låsstygn | Tre lägen (`--las`): **lite** (standard sedan test 1): start = 2 stygn om 0,8 mm längs sömmen, slut = 1 stygn 0,8 mm bakåt längs sömmen. **normal** (test 1): 3 + 3 stygn om 0,5 mm. **inget**: inga lås. | Test 1 (normal) gav en liten synlig knut vid varje trådklipp. Orsak: för många trådlager på 0,5 mm, och på slutna konturer ligger start- och slutlås på samma ställe (6 extra stygn). Lite lås sprider ut låsen (start 0,8 mm framåt, slut 0,8 mm bakåt) och ger färre lager. | Test 1 (normal): knut synlig på framsidan. Test 2: väntar (lite / inget). |
 | Klipp | Klipp läggs efter låsstygn. Klipp + hopp används även för korta flyttar (cirka 2 mm). |
 | Start och slut | Börjar med hopp från origo och slutar med klipp, hopp tillbaka till origo, END |
 
@@ -88,4 +88,4 @@ Slutsatser: våra löpsömsstygn (2,5 mm) är längre än referensens fyllnads-/
 
 Fyll i här efter varje provsömnad: datum, maskin, material, tråd, vad som blev bra/dåligt och vilken regel som ändras.
 
-- (ännu inga provbroderingar)
+- **Test 1** (Tajima 6 huvuden, steg 1, 80 mm, lås *normal*): rätt bredd och höjd, stygnen på rätt plats. Fel: liten knut på framsidan vid varje trådklipp (låsstygnen syns eftersom konturen ligger ytligt och slutna konturer får lås i både start och slut på samma ställe). Åtgärd: nytt standardläge `--las lite`, plus `--las inget` att jämföra med.

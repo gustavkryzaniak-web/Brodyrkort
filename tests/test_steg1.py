@@ -79,13 +79,23 @@ def test_stygn_inte_kortare_an_0_3mm(svg_cirkel, svg_kvadrat, tmp_path):
                 assert mm >= 0.29, f"för kort stygn {mm:.2f} mm"
 
 
-def test_lasstygn_i_borjan_och_slut(svg_kvadrat, tmp_path):
-    dst, *_ = kor(svg_kvadrat, ut_mapp=str(tmp_path))
-    p = las_dst(dst)
-    st = [(x, y) for x, y, k in p.stitches if (k & 0xFF) == STITCH]
-    # tre låsstygn om 0,5 mm i början
+def test_lasstygn_normal(svg_kvadrat, tmp_path):
     import math
+    dst, *_ = kor(svg_kvadrat, ut_mapp=str(tmp_path), las="normal")
+    st = [(x, y) for x, y, k in las_dst(dst).stitches if (k & 0xFF) == STITCH]
     assert [round(math.dist(st[i], st[i + 1]) / 10, 1) for i in range(0, 2)] == [0.5, 0.5]
+
+
+def test_lite_las_ger_faerre_stygn_an_normalt(svg_kvadrat, tmp_path):
+    import math
+    *_, lite, _ = kor(svg_kvadrat, ut_mapp=str(tmp_path), las="lite")
+    *_, normal, _ = kor(svg_kvadrat, ut_mapp=str(tmp_path), las="normal")
+    *_, inget, _ = kor(svg_kvadrat, ut_mapp=str(tmp_path), las="inget")
+    assert inget.stygn < lite.stygn < normal.stygn
+    # lite lås: första stygnet är 0,8 mm längs sömmen
+    dst, *_ = kor(svg_kvadrat, ut_mapp=str(tmp_path), las="lite")
+    st = [(x, y) for x, y, k in las_dst(dst).stitches if (k & 0xFF) == STITCH]
+    assert round(math.dist(st[0], st[1]) / 10, 1) == 0.8
 
 
 def test_varnar_for_stor_logga(svg_kvadrat, tmp_path):
