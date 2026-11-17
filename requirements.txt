@@ -1,0 +1,8 @@
+svgelements>=1.9
+shapely>=2.0
+pyembroidery>=1.5
+pytest>=8.0
+pillow>=10.0
+numpy>=1.26
+# Bara för tools/png_till_svg.py (görs om PNG till SVG):
+scikit-image>=0.22
