@@ -12,6 +12,22 @@ Kolumnen "Provbroderat" fylls i efter varje provsömnad (datum, maskin, material
 - Trådklipp skrivs som tre små hopp i DST (`trim_at=3`). Det är så Tajima-maskiner normalt tolkar ett klipp, men det ska bekräftas i provbroderingen.
 - Hastighet: sytiden i sammanfattningen räknas med 800 stygn/min. Justera när vi vet vad maskinen går i verkligheten.
 
+## Referensfil från riktig produktion
+
+`Katthammarsvik_230013.DST` (från er egen programvara) analyserad:
+
+| Mått | Värde |
+|---|---|
+| Storlek | 90,0 x 66,5 mm |
+| Antal stygn | 8 775 (en färg, inga färgbyten) |
+| Trådklipp / hopp | 11 klipp, 35 hopp, 9 sömnadssekvenser |
+| Stygnlängd | median 1,3 mm, medel 1,4 mm, längsta 9,6 mm. 79 % ligger mellan 1,0 och 2,5 mm. 0,6 % är kortare än 0,3 mm (kortast 0,2 mm) |
+| Låsstygn | Fram/tillbaka-stygn (cirka 0,6–0,9 mm), 3 stygn i början och slutet av sekvenser. Samma idé som vår regel. |
+| Klipp | Klipp läggs efter låsstygn. Klipp + hopp används även för korta flyttar (cirka 2 mm). |
+| Start och slut | Börjar med hopp från origo och slutar med klipp, hopp tillbaka till origo, END |
+
+Slutsatser: våra löpsömsstygn (2,5 mm) är längre än referensens fyllnads-/satinstygn. Fyllnad i steg 2 bör ligga kring 1,0–2,5 mm stygnlängd. En logga i den här storleken blir flera tusen stygn, så sytiden blir betydligt längre än våra 0,7 minuter för bara konturer.
+
 ## Enheter och format
 
 | Regel | Värde | Motivering | Provbroderat |
@@ -46,7 +62,7 @@ Kolumnen "Provbroderat" fylls i efter varje provsömnad (datum, maskin, material
 | Hopp längre än gränsen | Delas i flera JUMP | DST-gräns. | – |
 | TRIM i DST | pyembroidery skriver TRIM som tre små hopp (standard `trim_at=3`) | Det är så DST-maskiner känner igen ett klipp. Kan variera mellan maskinmärken. | – |
 | Färgbyte | COLOR_CHANGE mellan färger, END sist | Maskinen klipper själv vid färgbyte. Inget extra TRIM läggs in. | – |
-| Slutposition | Där sista stygnet hamnade | Vi återvänder inte till origo (kan läggas till om maskinen kräver det). | – |
+| Slutposition | Sista sömnadssekvensen får låsstygn och klipp, därefter hopp tillbaka till origo (0,0) och END | Så gör referensfilen från er egen programvara (Katthammarsvik). Maskinen står då i ramens mitt. | – |
 
 ## Färger
 

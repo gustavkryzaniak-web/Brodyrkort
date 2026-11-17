@@ -171,6 +171,10 @@ def bygg_monster(logga: Logga, stygnlangd_mm: float = 2.5, namn: str = "logga"):
                 _slutlas(b, pts[-1], pts[-2])
                 if i + 1 < len(ordning):
                     b.klipp()
+    # Som i referensfilen: klipp, hoppa tillbaka till origo (ramens mitt) och avsluta.
+    if b.kmd:
+        b.klipp()
+        b.hopp((0.0, 0.0))
     b.slut()
 
     pattern = EmbPattern()

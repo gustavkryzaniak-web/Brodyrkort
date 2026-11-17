@@ -136,4 +136,11 @@ def test_cirkel_ar_slutna_konturer(svg_cirkel, tmp_path):
     dst, _, stat, _ = kor(svg_cirkel, bredd_mm=60, ut_mapp=str(tmp_path))
     b, h = stygn_bbox_mm(las_dst(dst))
     assert b == pytest.approx(60, abs=0.5) and h == pytest.approx(60, abs=0.5)
-    assert stat.klipp == 0 and stat.hopp >= 1
+    assert stat.klipp == 1 and stat.hopp >= 1  # ett klipp före återgången till origo
+
+
+def test_filen_slutar_i_origo(svg_kvadrat, tmp_path):
+    dst, *_ = kor(svg_kvadrat, ut_mapp=str(tmp_path))
+    p = las_dst(dst)
+    x, y, k = p.stitches[-1]
+    assert (x, y) == (0, 0)
